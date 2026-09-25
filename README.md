@@ -3,6 +3,12 @@
 Dependency-aware Kanban board with a DAG scheduling engine underneath.
 Contata NCR Hackathon 2026.
 
+## Live Demo
+
+- **TaskFlow Pro app:** [taskflow-pro-three-inky.vercel.app](https://taskflow-pro-three-inky.vercel.app/)
+- **API health:** [taskflow-pro-server-ufxz.onrender.com/health](https://taskflow-pro-server-ufxz.onrender.com/health)
+- **Live board JSON:** [taskflow-pro-server-ufxz.onrender.com/board](https://taskflow-pro-server-ufxz.onrender.com/board)
+
 For the judge-facing walkthrough, see [DEMO_GUIDE.md](DEMO_GUIDE.md). The
 combined architecture, data model, security, testing, AI, and limitations
 write-up is in [DESIGN_DOCUMENT.md](DESIGN_DOCUMENT.md). It
