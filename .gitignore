@@ -1,0 +1,18 @@
+# Dependencies
+node_modules/
+
+# Environment secrets — NEVER commit real .env files (see hackathon guidelines)
+.env
+.env.local
+
+# Build artifacts
+dist/
+build/
+
+# Prisma
+*.db
+
+# OS/editor cruft
+.DS_Store
+.vscode/*
+!.vscode/extensions.json

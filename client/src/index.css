@@ -1,0 +1,263 @@
+@import "tailwindcss";
+
+/* ============================================================
+   Default theme variables — this IS the original look (slate/
+   indigo) and stays active until the user picks a theme via the
+   Theme button. Every component reads colors/fonts/shape from
+   these variables, never hardcoded Tailwind color utilities, so
+   picking a theme restyles the entire app at once.
+   ============================================================ */
+:root {
+  color-scheme: light;
+
+  /* Brand palette — matches the Analyst-in-a-Box deck (navy + orange) so
+     the whole hackathon submission (deck + app) reads as one cohesive
+     product. This IS the default look, active until a theme is picked. */
+  --tf-bg: #f4f6fb;
+  --tf-bg-image: none;
+
+  --tf-surface: #ffffff;
+  --tf-surface-border: #e2e6ee;
+
+  --tf-text: #1b1f2a;
+  --tf-subtext: #6b7280;
+
+  --tf-card-bg: #ffffff;
+  --tf-card-border: #e2e6ee;
+  --tf-card-shadow: 0 1px 2px rgba(15, 23, 42, 0.05);
+
+  --tf-radius: 10px;
+
+  --tf-accent: #1e2664;
+  --tf-accent-hover: #2b3480;
+  --tf-accent-text: #ffffff;
+
+  --tf-critical-border: #d94f2b;
+
+  --tf-status-blocked-bg: #fff1f2;
+  --tf-status-blocked-text: #be123c;
+  --tf-status-blocked-border: #fecdd3;
+  --tf-status-ready-bg: #eef1fb;
+  --tf-status-ready-text: #1e2664;
+  --tf-status-ready-border: #c7cef0;
+  --tf-status-done-bg: #ecfdf5;
+  --tf-status-done-text: #047857;
+  --tf-status-done-border: #a7f3d0;
+
+  --tf-font-heading: inherit;
+  --tf-font-body: inherit;
+
+  --tf-modal-overlay: rgba(15, 23, 42, 0.4);
+  --tf-dropzone-bg: rgba(30, 38, 100, 0.08);
+  --tf-secondary-hover: rgba(15, 23, 42, 0.05);
+}
+
+body {
+  background-color: var(--tf-bg);
+  background-image: var(--tf-bg-image);
+  color: var(--tf-text);
+  font-family: var(--tf-font-body);
+  transition: background-color 0.25s ease, color 0.25s ease;
+  @apply antialiased;
+}
+
+h1, h2, h3, h4, .tf-heading {
+  font-family: var(--tf-font-heading);
+}
+
+.kanban-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: var(--tf-surface-border) transparent;
+}
+
+/* ============================================================
+   Reusable theme-driven building blocks
+   ============================================================ */
+
+.tf-header {
+  background-color: var(--tf-surface);
+  border-bottom: 1px solid var(--tf-surface-border);
+  color: var(--tf-text);
+}
+.tf-header-subtext {
+  color: var(--tf-subtext);
+}
+
+.tf-btn-primary {
+  background-color: var(--tf-accent);
+  color: var(--tf-accent-text);
+  font-family: var(--tf-font-body);
+}
+.tf-btn-primary:hover {
+  background-color: var(--tf-accent-hover);
+}
+.tf-btn-primary:disabled {
+  opacity: 0.5;
+}
+
+.tf-btn-secondary {
+  border-color: var(--tf-surface-border);
+  color: var(--tf-subtext);
+  background-color: transparent;
+}
+.tf-btn-secondary:hover {
+  background-color: var(--tf-secondary-hover);
+}
+.tf-btn-secondary.is-active {
+  border-color: var(--tf-critical-border);
+  color: var(--tf-critical-border);
+}
+
+.tf-column {
+  background-color: var(--tf-surface);
+  border: 1px solid var(--tf-surface-border);
+  border-radius: var(--tf-radius);
+}
+.tf-column-header {
+  border-bottom: 1px solid var(--tf-surface-border);
+  color: var(--tf-text);
+}
+.tf-column-count {
+  color: var(--tf-subtext);
+}
+.tf-column-dropzone.is-over-valid {
+  background-color: rgba(34, 197, 94, 0.12);
+}
+.tf-column-dropzone.is-over-invalid {
+  background-color: rgba(239, 68, 68, 0.14);
+}
+
+.tf-skeleton {
+  display: inline-block;
+  background: linear-gradient(90deg, var(--tf-card-border) 25%, var(--tf-surface) 50%, var(--tf-card-border) 75%);
+  background-size: 200% 100%;
+  animation: tf-shimmer 1.4s ease-in-out infinite;
+}
+@keyframes tf-shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+.tf-modal-overlay {
+  animation: tf-fade-in 0.15s ease;
+}
+.tf-modal {
+  animation: tf-scale-in 0.18s cubic-bezier(0.2, 0.9, 0.3, 1);
+}
+@keyframes tf-fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes tf-scale-in {
+  from { opacity: 0; transform: scale(0.96) translateY(6px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+.tf-card {
+  background-color: var(--tf-card-bg);
+  border: 1px solid var(--tf-card-border);
+  border-radius: var(--tf-radius);
+  box-shadow: var(--tf-card-shadow);
+  color: var(--tf-text);
+}
+.tf-card:hover {
+  filter: brightness(1.03);
+}
+.tf-card.is-dragging {
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+}
+.tf-card.is-critical {
+  border-color: var(--tf-critical-border);
+  box-shadow: 0 0 0 1px var(--tf-critical-border);
+}
+.tf-card-subtext {
+  color: var(--tf-subtext);
+}
+
+.tf-badge {
+  border-radius: 999px;
+  font-family: var(--tf-font-body);
+}
+.tf-badge-blocked {
+  background-color: var(--tf-status-blocked-bg);
+  color: var(--tf-status-blocked-text);
+  border: 1px solid var(--tf-status-blocked-border);
+}
+.tf-badge-ready {
+  background-color: var(--tf-status-ready-bg);
+  color: var(--tf-status-ready-text);
+  border: 1px solid var(--tf-status-ready-border);
+}
+.tf-badge-done {
+  background-color: var(--tf-status-done-bg);
+  color: var(--tf-status-done-text);
+  border: 1px solid var(--tf-status-done-border);
+}
+
+.tf-modal-overlay {
+  background-color: var(--tf-modal-overlay);
+}
+.tf-modal {
+  background-color: var(--tf-card-bg);
+  border-radius: var(--tf-radius);
+  color: var(--tf-text);
+}
+.tf-modal-header {
+  border-bottom: 1px solid var(--tf-surface-border);
+}
+
+.tf-input {
+  background-color: var(--tf-surface);
+  border: 1px solid var(--tf-surface-border);
+  color: var(--tf-text);
+  font-family: var(--tf-font-body);
+}
+.tf-input:focus {
+  outline: none;
+  border-color: var(--tf-accent);
+  box-shadow: 0 0 0 1px var(--tf-accent);
+}
+
+.tf-pill {
+  background-color: var(--tf-surface);
+  border: 1px solid var(--tf-surface-border);
+  color: var(--tf-subtext);
+}
+
+.tf-banner-info {
+  background-color: var(--tf-status-ready-bg);
+  color: var(--tf-status-ready-text);
+}
+.tf-banner-error {
+  background-color: var(--tf-status-blocked-bg);
+  color: var(--tf-status-blocked-text);
+}
+
+.tf-popover {
+  background-color: var(--tf-card-bg);
+  border-color: var(--tf-card-border);
+  color: var(--tf-text);
+}
+.tf-popover-header {
+  background-color: var(--tf-surface);
+  border-bottom: 1px solid var(--tf-surface-border);
+  color: var(--tf-subtext);
+}
+.tf-popover-item {
+  color: var(--tf-text);
+}
+.tf-popover-item:hover {
+  background-color: var(--tf-secondary-hover);
+}
+.tf-popover-back {
+  color: var(--tf-subtext);
+}
+.tf-popover-back:hover {
+  color: var(--tf-text);
+}
+.tf-swatch {
+  transition: transform 0.15s ease;
+}
+.tf-swatch:hover {
+  transform: translateY(-2px);
+}

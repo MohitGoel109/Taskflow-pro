@@ -1,0 +1,35 @@
+{
+  "name": "taskflow-pro-server",
+  "version": "0.1.0",
+  "private": true,
+  "type": "commonjs",
+  "scripts": {
+    "test": "jest --watchAll=false",
+    "test:watch": "jest",
+    "dev": "nodemon src/index.js",
+    "start": "node src/index.js",
+    "postinstall": "prisma generate",
+    "start:prod": "prisma migrate deploy && node src/index.js",
+    "prisma:migrate": "prisma migrate dev --name init",
+    "prisma:generate": "prisma generate",
+    "prisma:studio": "prisma studio",
+    "seed": "node prisma/seed.js"
+  },
+  "engines": {
+    "node": ">=18.18"
+  },
+  "prisma": {
+    "seed": "node prisma/seed.js"
+  },
+  "dependencies": {
+    "@prisma/client": "^5.18.0",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0",
+    "nodemon": "^3.1.4",
+    "prisma": "^5.18.0"
+  }
+}

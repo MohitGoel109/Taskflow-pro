@@ -1,0 +1,41 @@
+// TaskFlow Pro — Prisma schema
+// Mirrors the shape used by src/dag/dag.js exactly (id, status, startDate,
+// endDate, durationDays as integers = "day offsets", see dag.js doc comment).
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Task {
+  id           String   @id @default(uuid())
+  title        String
+  description  String?
+  column       String   @default("Backlog") // Backlog | In Progress | Review | Done
+  status       String   @default("Ready")   // Blocked | Ready | Done (DAG-derived)
+  startDate    Int      @default(0)
+  endDate      Int      @default(1)
+  durationDays Int      @default(1)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  // This task as a PREREQUISITE of other tasks
+  successorEdges   Dependency[] @relation("predecessor")
+  // This task DEPENDING ON other tasks
+  predecessorEdges Dependency[] @relation("successor")
+}
+
+model Dependency {
+  id            String @id @default(uuid())
+  predecessorId String
+  successorId   String
+
+  predecessor Task @relation("predecessor", fields: [predecessorId], references: [id], onDelete: Cascade)
+  successor   Task @relation("successor", fields: [successorId], references: [id], onDelete: Cascade)
+
+  @@unique([predecessorId, successorId])
+}
