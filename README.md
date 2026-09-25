@@ -9,6 +9,20 @@ Contata NCR Hackathon 2026.
 - **API health:** [taskflow-pro-server-ufxz.onrender.com/health](https://taskflow-pro-server-ufxz.onrender.com/health)
 - **Live board JSON:** [taskflow-pro-server-ufxz.onrender.com/board](https://taskflow-pro-server-ufxz.onrender.com/board)
 
+## Performance Evidence
+
+Validated with Google PageSpeed Insights:
+
+| Test | Performance | Accessibility | Best Practices | SEO |
+|---|---:|---:|---:|---:|
+| Desktop | 100 | 94 | 100 | 82 |
+| Mobile | 96 | 94 | 100 | 82 |
+
+<p align="center">
+  <img src="docs/screenshots/pagespeed-desktop.png" alt="PageSpeed Insights desktop results" width="49%" />
+  <img src="docs/screenshots/pagespeed-mobile.png" alt="PageSpeed Insights mobile results" width="49%" />
+</p>
+
 For the judge-facing walkthrough, see [DEMO_GUIDE.md](DEMO_GUIDE.md). The
 combined architecture, data model, security, testing, AI, and limitations
 write-up is in [DESIGN_DOCUMENT.md](DESIGN_DOCUMENT.md). It
