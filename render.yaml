@@ -23,6 +23,8 @@ services:
         value: 4000
       - key: LLM_API_KEY
         sync: false
+      - key: CORS_ORIGIN
+        sync: false
 
 databases:
   - name: taskflow-pro-db
