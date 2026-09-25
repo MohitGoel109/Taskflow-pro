@@ -1,6 +1,6 @@
 // TaskFlow Pro — Theme Registry
 // -------------------------------
-// 5 categories x 4 sub-themes = 20 total. Each sub-theme is a flat map of
+// 6 categories x 4 sub-themes = 24 total. Each sub-theme is a flat map of
 // CSS custom properties applied to :root when selected (see ThemeContext.jsx).
 // Deliberately varies palette AND font-pairing AND radius AND shadow style
 // AND background pattern per theme so no two ever read as "the same theme,
@@ -40,11 +40,90 @@ const TRIO_LIGHT = {
   "--tf-status-done-bg": "#e6f7ec", "--tf-status-done-text": "#15803d", "--tf-status-done-border": "#b3e6c4",
 };
 
+function hexToRgb(hex) {
+  const value = hex.replace("#", "");
+  const expanded = value.length === 3 ? value.split("").map((part) => part + part).join("") : value;
+  return [0, 2, 4].map((index) => parseInt(expanded.slice(index, index + 2), 16));
+}
+
+function rgbToHsl([red, green, blue]) {
+  const values = [red, green, blue].map((value) => value / 255);
+  const max = Math.max(...values);
+  const min = Math.min(...values);
+  const lightness = (max + min) / 2;
+  if (max === min) return [0, 0, lightness];
+
+  const delta = max - min;
+  const saturation = lightness > 0.5 ? delta / (2 - max - min) : delta / (max + min);
+  let hue;
+  if (max === values[0]) hue = (values[1] - values[2]) / delta + (values[1] < values[2] ? 6 : 0);
+  else if (max === values[1]) hue = (values[2] - values[0]) / delta + 2;
+  else hue = (values[0] - values[1]) / delta + 4;
+  return [hue / 6, saturation, lightness];
+}
+
+function hslToHex([hue, saturation, lightness]) {
+  const hueToRgb = (p, q, t) => {
+    if (t < 0) t += 1;
+    if (t > 1) t -= 1;
+    if (t < 1 / 6) return p + (q - p) * 6 * t;
+    if (t < 1 / 2) return q;
+    if (t < 2 / 3) return p + (q - p) * (2 / 3 - t) * 6;
+    return p;
+  };
+  if (saturation === 0) {
+    const value = Math.round(lightness * 255).toString(16).padStart(2, "0");
+    return `#${value}${value}${value}`;
+  }
+  const q = lightness < 0.5 ? lightness * (1 + saturation) : lightness + saturation - lightness * saturation;
+  const p = 2 * lightness - q;
+  const red = Math.round(hueToRgb(p, q, hue + 1 / 3) * 255).toString(16).padStart(2, "0");
+  const green = Math.round(hueToRgb(p, q, hue) * 255).toString(16).padStart(2, "0");
+  const blue = Math.round(hueToRgb(p, q, hue - 1 / 3) * 255).toString(16).padStart(2, "0");
+  return `#${red}${green}${blue}`;
+}
+
+function uniqueStatusTrio(accent, bg) {
+  const [accentHue] = rgbToHsl(hexToRgb(accent));
+  const [, , backgroundLightness] = rgbToHsl(hexToRgb(bg));
+  const dark = backgroundLightness < 0.5;
+  const toneShift = backgroundLightness * 0.08;
+  const make = (hue, lightness) => hslToHex([
+    ((accentHue + hue) % 1 + 1) % 1,
+    dark ? 0.52 : 0.62,
+    Math.max(0.08, Math.min(0.92, lightness + toneShift)),
+  ]);
+  const backgroundLight = dark ? 0.16 : 0.92;
+  const textLight = dark ? 0.78 : 0.32;
+  const borderLight = dark ? 0.44 : 0.68;
+  return {
+    "--tf-status-blocked-bg": make(0.92, backgroundLight), "--tf-status-blocked-text": make(0.92, textLight), "--tf-status-blocked-border": make(0.92, borderLight),
+    "--tf-status-ready-bg": make(0.12, backgroundLight), "--tf-status-ready-text": make(0.12, textLight), "--tf-status-ready-border": make(0.12, borderLight),
+    "--tf-status-done-bg": make(0.38, backgroundLight), "--tf-status-done-text": make(0.38, textLight), "--tf-status-done-border": make(0.38, borderLight),
+  };
+}
+
+function cursorForAccent(accent) {
+  const color = accent.replace("#", "%23");
+  return `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 18 18'%3E%3Cpath d='M3 2l11 7-5 1-2 5z' fill='%23000' stroke='%23${color.slice(3)}' stroke-width='1.4'/%3E%3C/svg%3E") 2 2, auto`;
+}
+
+function motionForAccent(accent) {
+  const [hue] = rgbToHsl(hexToRgb(accent));
+  if (hue < 0.08 || hue >= 0.92) return { card: "tf-card-rise", screen: "tf-screen-breathe", duration: "8s" };
+  if (hue < 0.25) return { card: "tf-card-sway", screen: "tf-screen-drift", duration: "14s" };
+  if (hue < 0.48) return { card: "tf-card-lift", screen: "tf-screen-sweep", duration: "18s" };
+  if (hue < 0.72) return { card: "tf-card-glow", screen: "tf-screen-drift", duration: "22s" };
+  return { card: "tf-card-fade", screen: "tf-screen-flicker", duration: "11s" };
+}
+
 function theme({
   label, bg, bgImage = "none", surface, surfaceBorder, text, subtext,
   cardBg, cardBorder, cardShadow, radius, accent, accentHover, accentText,
   criticalBorder, trio, fontHeading, fontBody, overlay, dropzoneBg, secondaryHover,
+  screenEffect, cursorEffect,
 }) {
+  const motion = motionForAccent(accent);
   return {
     label,
     vars: {
@@ -67,7 +146,14 @@ function theme({
       "--tf-modal-overlay": overlay,
       "--tf-dropzone-bg": dropzoneBg,
       "--tf-secondary-hover": secondaryHover,
-      ...trio,
+      "--tf-screen-effect": screenEffect || (bgImage !== "none"
+        ? bgImage
+        : "radial-gradient(circle at 50% 0%, color-mix(in srgb, var(--tf-accent) 18%, transparent), transparent 60%)"),
+      "--tf-cursor": cursorEffect || cursorForAccent(accent),
+      "--tf-card-animation": motion.card,
+      "--tf-screen-animation": motion.screen,
+      "--tf-motion-duration": motion.duration,
+      ...uniqueStatusTrio(accent, bg),
     },
   };
 }
@@ -165,16 +251,16 @@ export const THEME_CATEGORIES = [
       }),
       poisonGarden: theme({
         label: "Poison Garden",
-        bg: "#0a1408",
-        bgImage: "radial-gradient(circle at 80% 100%, rgba(80,180,60,0.15), transparent 55%)",
-        surface: "#12200e", surfaceBorder: "#2a4a1f",
-        text: "#dcf0d0", subtext: "#8fb87a",
-        cardBg: "#162a10", cardBorder: "#335c24", cardShadow: "0 4px 16px rgba(0,0,0,0.55)",
+        bg: "#061516",
+        bgImage: "radial-gradient(circle at 80% 100%, rgba(0,210,170,0.18), transparent 55%)",
+        surface: "#0b2424", surfaceBorder: "#18534d",
+        text: "#d8fff4", subtext: "#72c7b5",
+        cardBg: "#0d2d2b", cardBorder: "#20736a", cardShadow: "0 4px 18px rgba(0,210,170,0.16)",
         radius: "8px",
-        accent: "#6fcf3a", accentHover: "#84e34a", accentText: "#0a1408",
-        criticalBorder: "#e0d23a", trio: TRIO_WARM,
+        accent: "#00d2aa", accentHover: "#32e8c2", accentText: "#041211",
+        criticalBorder: "#f1d45b", trio: TRIO_WARM,
         fontHeading: "'UnifrakturCook', cursive", fontBody: "'Mulish', sans-serif",
-        overlay: "rgba(5,10,4,0.8)", dropzoneBg: "rgba(111,207,58,0.12)", secondaryHover: "rgba(255,255,255,0.05)",
+        overlay: "rgba(3,14,14,0.8)", dropzoneBg: "rgba(0,210,170,0.12)", secondaryHover: "rgba(255,255,255,0.05)",
       }),
       phantomBlade: theme({
         label: "Phantom Blade",
@@ -370,6 +456,65 @@ export const THEME_CATEGORIES = [
       }),
     },
   },
+  {
+    key: "western",
+    label: "Western",
+    emoji: "\uD83E\uDD20",
+    themes: {
+      dustyTrail: theme({
+        label: "Dusty Trail",
+        bg: "#21150f",
+        bgImage: "repeating-linear-gradient(12deg, rgba(214,151,76,0.06) 0 2px, transparent 2px 18px)",
+        surface: "#302017", surfaceBorder: "#785033",
+        text: "#f7e3c4", subtext: "#c99a67",
+        cardBg: "#382419", cardBorder: "#8d5b36", cardShadow: "4px 5px 0 rgba(0,0,0,0.32)",
+        radius: "3px",
+        accent: "#d89445", accentHover: "#f0ad5e", accentText: "#21150f",
+        criticalBorder: "#e65f3d", trio: TRIO_WARM,
+        fontHeading: "'Rye', cursive", fontBody: "'Roboto Slab', serif",
+        overlay: "rgba(28,15,8,0.72)", dropzoneBg: "rgba(216,148,69,0.14)", secondaryHover: "rgba(255,235,200,0.07)",
+      }),
+      sheriffOffice: theme({
+        label: "Sheriff Office",
+        bg: "#e8e0cf",
+        bgImage: "linear-gradient(rgba(92,73,45,0.06) 1px, transparent 1px), linear-gradient(90deg, rgba(92,73,45,0.04) 1px, transparent 1px)",
+        surface: "#f7f0df", surfaceBorder: "#b9a47d",
+        text: "#30291e", subtext: "#75654b",
+        cardBg: "#fff9e9", cardBorder: "#b9a47d", cardShadow: "3px 3px 0 rgba(92,73,45,0.18)",
+        radius: "2px",
+        accent: "#1f5f78", accentHover: "#2c7f9d", accentText: "#ffffff",
+        criticalBorder: "#b23a32", trio: TRIO_LIGHT,
+        fontHeading: "'Rye', cursive", fontBody: "'Roboto Slab', serif",
+        overlay: "rgba(70,52,30,0.28)", dropzoneBg: "rgba(31,95,120,0.10)", secondaryHover: "rgba(70,52,30,0.06)",
+      }),
+      neonSaloon: theme({
+        label: "Neon Saloon",
+        bg: "#160b18",
+        bgImage: "radial-gradient(circle at 18% 10%, rgba(255,93,168,0.2), transparent 36%), repeating-linear-gradient(90deg, rgba(255,193,77,0.04) 0 1px, transparent 1px 12px)",
+        surface: "#261126", surfaceBorder: "#713052",
+        text: "#ffe8f1", subtext: "#d995b4",
+        cardBg: "#30152f", cardBorder: "#91406d", cardShadow: "0 0 22px rgba(255,93,168,0.18)",
+        radius: "10px",
+        accent: "#ff5da8", accentHover: "#ff83bb", accentText: "#260916",
+        criticalBorder: "#ffd166", trio: TRIO_NEON,
+        fontHeading: "'Rye', cursive", fontBody: "'Barlow Condensed', sans-serif",
+        overlay: "rgba(18,5,20,0.82)", dropzoneBg: "rgba(255,93,168,0.13)", secondaryHover: "rgba(255,255,255,0.06)",
+      }),
+      outlawSunset: theme({
+        label: "Outlaw Sunset",
+        bg: "#32140e",
+        bgImage: "radial-gradient(circle at 80% 0%, rgba(255,190,70,0.3), transparent 52%), linear-gradient(160deg, rgba(185,52,48,0.16), transparent 58%)",
+        surface: "#4a1c13", surfaceBorder: "#a64b2f",
+        text: "#fff0d1", subtext: "#e3a36f",
+        cardBg: "#552016", cardBorder: "#c25d38", cardShadow: "0 5px 20px rgba(0,0,0,0.4)",
+        radius: "14px 3px 14px 3px",
+        accent: "#f2b544", accentHover: "#ffd16b", accentText: "#32140e",
+        criticalBorder: "#57c7b1", trio: TRIO_PASTEL,
+        fontHeading: "'Rye', cursive", fontBody: "'Barlow Condensed', sans-serif",
+        overlay: "rgba(42,12,7,0.76)", dropzoneBg: "rgba(242,181,68,0.14)", secondaryHover: "rgba(255,240,200,0.08)",
+      }),
+    },
+  },
 ];
 
 export function findTheme(categoryKey, themeKey) {
@@ -401,4 +546,5 @@ export const ALL_FONT_FAMILIES = [
   "Creepster", "Special+Elite",
   "Nosifer", "Crimson+Text:wght@400;600",
   "IM+Fell+English+SC", "IM+Fell+English:ital@0;1",
+  "Rye", "Roboto+Slab:wght@400;600", "Barlow+Condensed:wght@400;600",
 ];

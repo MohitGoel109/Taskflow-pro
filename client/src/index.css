@@ -50,15 +50,75 @@
   --tf-modal-overlay: rgba(15, 23, 42, 0.4);
   --tf-dropzone-bg: rgba(30, 38, 100, 0.08);
   --tf-secondary-hover: rgba(15, 23, 42, 0.05);
+  --tf-screen-effect: none;
+  --tf-cursor: auto;
+  --tf-card-animation: tf-card-fade;
+  --tf-screen-animation: tf-screen-drift;
+  --tf-motion-duration: 18s;
 }
 
 body {
+  position: relative;
+  min-height: 100vh;
   background-color: var(--tf-bg);
   background-image: var(--tf-bg-image);
   color: var(--tf-text);
   font-family: var(--tf-font-body);
+  cursor: var(--tf-cursor);
   transition: background-color 0.25s ease, color 0.25s ease;
   @apply antialiased;
+}
+body::before {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  content: "";
+  background-image: var(--tf-screen-effect);
+  background-size: 140% 140%;
+  opacity: 0.3;
+  animation: var(--tf-screen-animation) var(--tf-motion-duration) ease-in-out infinite alternate;
+}
+body > * {
+  position: relative;
+  z-index: 1;
+}
+.tf-theme-effects {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none;
+  opacity: 0.82;
+}
+@media (prefers-reduced-motion: reduce) {
+  .tf-theme-effects {
+    opacity: 0.42;
+  }
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+  }
+}
+@keyframes tf-screen-drift {
+  from { background-position: 0% 0%; transform: scale(1); }
+  to { background-position: 100% 100%; transform: scale(1.04); }
+}
+@keyframes tf-screen-breathe {
+  from { opacity: 0.12; transform: scale(1); }
+  to { opacity: 0.3; transform: scale(1.06); }
+}
+@keyframes tf-screen-sweep {
+  from { background-position: 0% 0%; transform: translateX(-1%); }
+  to { background-position: 100% 100%; transform: translateX(1%); }
+}
+@keyframes tf-screen-flicker {
+  0%, 100% { opacity: 0.16; }
+  45% { opacity: 0.26; }
+  48% { opacity: 0.12; }
+  52% { opacity: 0.24; }
 }
 
 h1, h2, h3, h4, .tf-heading {
@@ -152,6 +212,26 @@ h1, h2, h3, h4, .tf-heading {
   from { opacity: 0; transform: scale(0.96) translateY(6px); }
   to { opacity: 1; transform: scale(1) translateY(0); }
 }
+@keyframes tf-card-rise {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes tf-card-sway {
+  from { opacity: 0; transform: translateX(-8px) rotate(-0.5deg); }
+  to { opacity: 1; transform: translateX(0) rotate(0); }
+}
+@keyframes tf-card-lift {
+  from { opacity: 0; transform: scale(0.97); }
+  to { opacity: 1; transform: scale(1); }
+}
+@keyframes tf-card-glow {
+  from { opacity: 0; filter: brightness(0.8); }
+  to { opacity: 1; filter: brightness(1); }
+}
+@keyframes tf-card-fade {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
 
 .tf-card {
   background-color: var(--tf-card-bg);
@@ -159,9 +239,23 @@ h1, h2, h3, h4, .tf-heading {
   border-radius: var(--tf-radius);
   box-shadow: var(--tf-card-shadow);
   color: var(--tf-text);
+  animation: var(--tf-card-animation) 0.55s both;
+}
+.tf-theme-transition .tf-card {
+  animation: var(--tf-card-animation) 0.8s both;
+}
+.tf-theme-transition .tf-header {
+  animation: tf-theme-header-pulse 0.8s ease both;
+}
+@keyframes tf-theme-header-pulse {
+  0% { filter: brightness(1); }
+  45% { filter: brightness(1.22); }
+  100% { filter: brightness(1); }
 }
 .tf-card:hover {
   filter: brightness(1.03);
+  transform: translateY(-1px);
+  transition: transform 0.18s ease, filter 0.18s ease;
 }
 .tf-card.is-dragging {
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);

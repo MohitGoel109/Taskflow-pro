@@ -19,6 +19,15 @@ function clearVars(vars) {
   }
 }
 
+function replayThemeMotion() {
+  const body = document.body;
+  if (!body) return;
+  body.classList.remove("tf-theme-transition");
+  void body.offsetWidth;
+  body.classList.add("tf-theme-transition");
+  window.setTimeout(() => body.classList.remove("tf-theme-transition"), 900);
+}
+
 export function ThemeProvider({ children }) {
   const [selection, setSelection] = useState(null); // { categoryKey, themeKey } | null
 
@@ -31,6 +40,7 @@ export function ThemeProvider({ children }) {
         const found = findTheme(saved.categoryKey, saved.themeKey);
         if (found) {
           applyVars(found.vars);
+          replayThemeMotion();
           setSelection(saved);
         }
       }
@@ -43,6 +53,7 @@ export function ThemeProvider({ children }) {
     const found = findTheme(categoryKey, themeKey);
     if (!found) return;
     applyVars(found.vars);
+    replayThemeMotion();
     const next = { categoryKey, themeKey };
     setSelection(next);
     try {

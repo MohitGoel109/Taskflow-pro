@@ -8,6 +8,7 @@ import AISuggestPanel from "./components/AISuggestPanel.jsx";
 import BoardSkeleton from "./components/BoardSkeleton.jsx";
 import EmptyState from "./components/EmptyState.jsx";
 import CriticalPathPanel from "./components/CriticalPathPanel.jsx";
+import ThemeEffects from "./components/ThemeEffects.jsx";
 
 export default function App() {
   const [tasks, setTasks] = useState([]);
@@ -195,6 +196,7 @@ export default function App() {
 
   return (
     <ThemeProvider>
+      <ThemeEffects />
       <div className="min-h-screen">
         <Header
           onSuggestAI={handleSuggestAI}
