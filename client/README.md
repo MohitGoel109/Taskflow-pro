@@ -4,12 +4,12 @@ React + Vite + Tailwind Kanban UI, wired to the server API.
 
 ## What's here
 
-- **Kanban board** — four columns (Backlog / In Progress / Review / Done),
-  drag-and-drop via `@hello-pangea/dnd`. Dropping a task PATCHes its
-  column on the server, which triggers the DAG engine's rollback/propagation
-  as needed, then the board reloads to reflect it.
+- **Kanban board** — four columns (Backlog / In Progress / Review / Done).
+  Click a task's status badge to open the animated workflow stepper and
+  change its stage directly. The legacy drag-and-drop path remains available
+  for spatial board editing.
 - **Blocked-task guard** — a task with unsatisfied prerequisites can only
-  live in Backlog; dragging it further shows an inline warning instead of
+  move to Backlog; the stepper disables later stages and dragging it further shows an inline warning instead of
   silently letting you "start" blocked work. (Documented design decision —
   the problem statement doesn't forbid this, but allowing it would
   contradict what the DAG engine says is actually startable.)
@@ -22,6 +22,8 @@ React + Vite + Tailwind Kanban UI, wired to the server API.
   cycle-check included).
 - **Critical Path toggle** — highlights the longest duration-weighted chain
   (gold border + star) across all four columns at once.
+- **Theme-aware canvas effects** — each theme has a distinct low-motion
+  particle composition and cursor interaction, with a reduced-motion fallback.
 
 ## Run it
 
@@ -39,10 +41,10 @@ server's URL instead of relying on the dev proxy.
 
 ## Key assumptions (carry into the top-level README too)
 
-- After every mutation (drag, dependency add/remove, task edit) the client
+- After every mutation (status stepper, drag, dependency add/remove, task edit) the client
   refetches the whole board rather than patching local state manually.
   Simpler and less error-prone for an MVP; a larger board would want
   incremental updates instead.
-- No optimistic update for dependency add/remove or task edits (only for
+- No optimistic update for dependency add/remove, status stepper, or task edits (only for
   the drag itself) — those are comparatively rare, deliberate actions
   where waiting for a server round-trip is an acceptable trade-off.

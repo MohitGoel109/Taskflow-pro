@@ -3,6 +3,12 @@
 Dependency-aware Kanban board with a DAG scheduling engine underneath.
 Contata NCR Hackathon 2026.
 
+For the judge-facing walkthrough, see [DEMO_GUIDE.md](DEMO_GUIDE.md). The
+combined architecture, data model, security, testing, AI, and limitations
+write-up is in [DESIGN_DOCUMENT.md](DESIGN_DOCUMENT.md). It
+contains a timed presentation script, the dependency-engine explanation,
+verification evidence, and the limitations to disclose honestly.
+
 **Status: Phases 1, 2 & 3 complete.** The DAG engine (cycle-safety,
 Blocked/Ready status, no-compounding propagation, rollback, bonus Critical
 Path) is built and verified. The REST API is wired to it, backed by
@@ -14,7 +20,7 @@ remaining optional item.
 
 ## Stack
 
-- **Frontend:** React + Vite + Tailwind CSS v4, drag-and-drop via `@hello-pangea/dnd`
+- **Frontend:** React + Vite + Tailwind CSS v4, with a clickable workflow stepper and optional drag-and-drop support
 - **Backend:** Express (Node.js), REST API wired to the DAG engine
 - **Database:** PostgreSQL, via Docker, accessed through Prisma
 - **DAG engine:** plain JavaScript, zero framework dependencies, unit-tested standalone
@@ -45,10 +51,11 @@ taskflow-pro/
 └── client/                    # React + Vite + Tailwind Kanban UI
     ├── src/
     │   ├── components/
-    │   │   ├── Board.jsx, Column.jsx, TaskCard.jsx    # Kanban board + DnD
+    │   │   ├── Board.jsx, Column.jsx, TaskCard.jsx    # Kanban board + workflow stepper
     │   │   ├── TaskModal.jsx      # Create/edit task + dependency editor
     │   │   ├── AISuggestPanel.jsx # AI suggestions, accept/reject
-    │   │   └── Header.jsx         # AI trigger + Critical Path toggle
+    │   │   ├── Header.jsx         # AI trigger + Critical Path toggle
+    │   │   └── ThemeEffects.jsx   # Theme-aware canvas particles and cursor effects
     │   ├── api.js              # Fetch wrapper around the server
     │   └── App.jsx              # Board state, drag handling, modals
     └── .env.example
@@ -145,6 +152,11 @@ npm run dev
 
 Visit `http://localhost:5173`. The dev server proxies `/api/*` to the
 backend on port 4000 — see `client/vite.config.js`.
+
+For the fastest demo, click a task's status badge to open the workflow
+stepper, then demonstrate a blocked prerequisite becoming Ready after its
+predecessor is marked Done. Finish with Critical Path, AI Suggestions, and
+the Theme picker. See [DEMO_GUIDE.md](DEMO_GUIDE.md) for the complete script.
 
 ### 9. Try creating a dependency that would cycle
 

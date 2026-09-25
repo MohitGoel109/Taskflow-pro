@@ -14,7 +14,7 @@ const STATUS_ICON = {
   Ready: "\u25CF", // dot
   Done: "\u2713", // check
 };
-const WORKFLOW = ["Backlog", "In Progress", "Review", "Done"];
+import { WORKFLOW_STAGES, canMoveTask } from "../workflow.js";
 
 export default function TaskCard({ task, index, onOpen, onStatusChange, isCritical, blockedBy = [] }) {
   const [showReason, setShowReason] = useState(false);
@@ -76,8 +76,8 @@ export default function TaskCard({ task, index, onOpen, onStatusChange, isCritic
 
           {stepperOpen && (
             <div className="tf-workflow-stepper" onClick={(event) => event.stopPropagation()}>
-              {WORKFLOW.map((stage, stageIndex) => {
-                const disabled = isBlocked && stage !== "Backlog";
+              {WORKFLOW_STAGES.map((stage, stageIndex) => {
+                const disabled = !canMoveTask(task, stage);
                 return (
                   <span key={stage} className="tf-workflow-step-wrap">
                     <button

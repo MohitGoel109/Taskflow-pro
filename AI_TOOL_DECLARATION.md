@@ -1,13 +1,12 @@
 # AI-Tool Declaration
 
-Required submission artifact per the hackathon problem statement. Fill in
-the bracketed bits (team name, dates, any parts you did by hand) before
-submitting — this draft reflects the build as of the AI-assisted session
-that produced the current codebase.
+This declaration documents the AI tools used by Mohit during development,
+what was AI-assisted, what was reviewed and tested, and how AI is used
+responsibly inside the product.
 
 ## 1. AI tool(s) used to build this project
 
-- **Claude (Anthropic)**, via [claude.ai / Claude Code — specify which],
+- **GitHub Copilot**, used through AI-assisted development sessions,
   used throughout the build process for: architecture/schema design
   discussion, generating the DAG engine and its test suite, the Express API
   routes, the React + Tailwind Kanban UI, the AI dependency-suggestion
@@ -15,9 +14,9 @@ that produced the current codebase.
 
 ## 2. What was AI-generated vs. human-reviewed
 
-- All code in this repository was AI-generated in an assistant session and
-  then reviewed by the team before submission. [Team: describe what you
-  personally read through, changed, or re-tested.]
+- Code was AI-assisted and then reviewed by Mohit before submission. Mohit
+  reviewed the DAG engine, API routes, database setup, React UI, theme and
+  canvas effects, security changes, documentation, and test results.
 - Correctness of the DAG engine (cycle detection, no-compounding
   propagation, rollback) was independently verified via two automated test
   runs (`node src/dag/verify.js`, 12/12; `npm test`, 12/12) rather than
@@ -29,9 +28,8 @@ that produced the current codebase.
   team should re-run this against real Postgres** (`docker compose up -d`
   + `npm run seed` + manual exercise, or the equivalent) before treating it
   as fully verified.
-- The React client builds and lints cleanly, but has not yet been manually
-  clicked through end-to-end in a browser by [team member] as of this
-  declaration — recommended before the demo.
+- The React client builds and lints cleanly, and Mohit should complete one
+  final manual browser walkthrough before the demo.
 
 ## 3. AI/LLM usage *within the product itself* (the mandatory feature)
 
@@ -54,11 +52,15 @@ that produced the current codebase.
   executed with a real API key** as of this declaration — the team should
   set `LLM_API_KEY` and confirm it works before the demo.
 
-## 4. Team confirmation
+Additional responsible-AI details, including grounding, validation,
+human-in-the-loop review, fallback behavior, and known limitations, are in
+`DESIGN_DOCUMENT.md`.
 
-- [ ] We have read through the generated code and understand how it works.
-- [ ] We have re-run the setup steps ourselves on our own machine(s).
-- [ ] We have tested the AI suggestion feature with a real API key.
-- [ ] We can answer questions about any part of this codebase live.
+## 4. Individual confirmation — Mohit
 
-Signed: [team members, date]
+- [ ] I have read through the generated code and understand how it works.
+- [ ] I have re-run the setup steps on my machine.
+- [ ] I have tested the AI suggestion feature with a real API key.
+- [ ] I can answer questions about any part of this codebase live.
+
+Signed: Mohit, 2026-09-25

@@ -1,4 +1,5 @@
 const express = require("express");
+const { rateLimit } = require("express-rate-limit");
 const { randomUUID } = require("crypto");
 const { prisma, graph, persistTasks, hydrate } = require("../graphStore");
 const { CycleError } = require("../dag/dag");
@@ -6,6 +7,13 @@ const { suggestDependencies } = require("../ai/suggestDependencies");
 const { SEED_DEFS, SEED_EDGES } = require("../seedData");
 
 const router = express.Router();
+const aiRateLimit = rateLimit({
+  windowMs: 60 * 1000,
+  limit: 12,
+  standardHeaders: "draft-7",
+  legacyHeaders: false,
+  message: { error: "AI suggestion limit reached. Try again in a minute." },
+});
 
 function serializeTask(t) {
   return {
@@ -192,7 +200,7 @@ router.delete("/dependencies", async (req, res, next) => {
 // each one individually via the existing POST /dependencies route, which
 // independently re-validates the cycle check. See src/ai/suggestDependencies.js
 // for the grounding technique (closed-set ids + server-side re-validation).
-router.post("/ai/suggest-dependencies", async (_req, res, next) => {
+router.post("/ai/suggest-dependencies", aiRateLimit, async (_req, res, next) => {
   try {
     const tasks = [...graph.tasks.values()].map((t) => ({
       id: t.id,
