@@ -272,6 +272,59 @@ h1, h2, h3, h4, .tf-heading {
   border-radius: 999px;
   font-family: var(--tf-font-body);
 }
+.tf-status-trigger {
+  cursor: pointer;
+  transition: filter 0.18s ease, transform 0.18s ease;
+}
+.tf-status-trigger:hover {
+  filter: brightness(1.12);
+  transform: translateY(-1px);
+}
+.tf-workflow-stepper {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  margin-top: 10px;
+  padding: 6px;
+  overflow-x: auto;
+  border: 1px solid var(--tf-surface-border);
+  border-radius: calc(var(--tf-radius) / 2 + 2px);
+  background: var(--tf-surface);
+  animation: tf-stepper-in 0.2s ease both;
+}
+.tf-workflow-step-wrap {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  flex-shrink: 0;
+}
+.tf-workflow-step {
+  border: 1px solid var(--tf-surface-border);
+  border-radius: 999px;
+  padding: 3px 6px;
+  color: var(--tf-subtext);
+  font-size: 10px;
+  white-space: nowrap;
+  transition: color 0.16s ease, background 0.16s ease, border-color 0.16s ease;
+}
+.tf-workflow-step:hover:not(:disabled),
+.tf-workflow-step.is-current {
+  border-color: var(--tf-accent);
+  background: var(--tf-accent);
+  color: var(--tf-accent-text);
+}
+.tf-workflow-step:disabled {
+  cursor: not-allowed;
+  opacity: 0.42;
+}
+.tf-workflow-arrow {
+  color: var(--tf-subtext);
+  font-size: 11px;
+}
+@keyframes tf-stepper-in {
+  from { opacity: 0; transform: translateY(-3px) scale(0.98); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
 .tf-badge-blocked {
   background-color: var(--tf-status-blocked-bg);
   color: var(--tf-status-blocked-text);

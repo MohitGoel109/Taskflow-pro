@@ -90,6 +90,16 @@ export default function App() {
     }
   }
 
+  async function handleStatusChange(taskId, column) {
+    try {
+      await api.updateTask(taskId, { column });
+      await loadBoard();
+      if (criticalPathOn) await refreshCriticalPath();
+    } catch (err) {
+      showBanner(err.message, "error");
+    }
+  }
+
   // ---------- Task CRUD ----------
   async function handleCreateTask(data) {
     setModalError(null);
@@ -248,6 +258,7 @@ export default function App() {
                 edges={edges}
                 onDragStart={handleDragStart}
                 onDragEnd={handleDragEnd}
+                onStatusChange={handleStatusChange}
                 onOpenTask={(task) => setEditingTaskId(task.id)}
                 onAddTask={() => setEditingTaskId(null)}
                 criticalIds={criticalPathOn ? criticalIds : new Set()}

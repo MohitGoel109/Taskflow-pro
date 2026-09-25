@@ -15,6 +15,7 @@ export default function Column({
   title,
   tasks,
   onOpenTask,
+  onStatusChange,
   criticalIds,
   onAddTask,
   draggingTask,
@@ -66,6 +67,7 @@ export default function Column({
                   task={task}
                   index={index}
                   onOpen={onOpenTask}
+                  onStatusChange={onStatusChange}
                   isCritical={criticalIds.has(task.id)}
                   blockedBy={getBlockedBy(task)}
                 />

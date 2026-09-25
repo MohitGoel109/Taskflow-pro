@@ -14,9 +14,11 @@ const STATUS_ICON = {
   Ready: "\u25CF", // dot
   Done: "\u2713", // check
 };
+const WORKFLOW = ["Backlog", "In Progress", "Review", "Done"];
 
-export default function TaskCard({ task, index, onOpen, isCritical, blockedBy = [] }) {
+export default function TaskCard({ task, index, onOpen, onStatusChange, isCritical, blockedBy = [] }) {
   const [showReason, setShowReason] = useState(false);
+  const [stepperOpen, setStepperOpen] = useState(false);
   const isBlocked = task.status === "Blocked";
 
   return (
@@ -54,16 +56,48 @@ export default function TaskCard({ task, index, onOpen, isCritical, blockedBy = 
             </p>
           )}
           <div className="mt-2 flex items-center justify-between">
-            <span
-              className={`tf-badge inline-flex items-center gap-1 px-2 py-0.5 text-[11px] font-medium ${STATUS_CLASS[task.status] || ""}`}
+            <button
+              type="button"
+              aria-expanded={stepperOpen}
+              aria-label={`Change workflow stage for ${task.title}`}
+              onClick={(event) => {
+                event.stopPropagation();
+                setStepperOpen((open) => !open);
+              }}
+              className={`tf-badge tf-status-trigger inline-flex items-center gap-1 px-2 py-0.5 text-[11px] font-medium ${STATUS_CLASS[task.status] || ""}`}
             >
               <span aria-hidden="true">{STATUS_ICON[task.status]}</span>
               {task.status}
-            </span>
+            </button>
             <span className="tf-card-subtext text-[11px]">
               day {task.startDate}&ndash;{task.endDate}
             </span>
           </div>
+
+          {stepperOpen && (
+            <div className="tf-workflow-stepper" onClick={(event) => event.stopPropagation()}>
+              {WORKFLOW.map((stage, stageIndex) => {
+                const disabled = isBlocked && stage !== "Backlog";
+                return (
+                  <span key={stage} className="tf-workflow-step-wrap">
+                    <button
+                      type="button"
+                      disabled={disabled || stage === task.column}
+                      className={`tf-workflow-step ${stage === task.column ? "is-current" : ""}`}
+                      title={disabled ? "Finish prerequisites before moving this task" : `Move to ${stage}`}
+                      onClick={() => {
+                        setStepperOpen(false);
+                        onStatusChange(task.id, stage);
+                      }}
+                    >
+                      {stage}
+                    </button>
+                    {stageIndex < WORKFLOW.length - 1 && <span className="tf-workflow-arrow" aria-hidden="true">&#8594;</span>}
+                  </span>
+                );
+              })}
+            </div>
+          )}
 
           {isBlocked && blockedBy.length > 0 && (
             <div className="mt-1.5">

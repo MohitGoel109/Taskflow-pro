@@ -19,6 +19,7 @@ export default function Board({
   edges,
   onDragEnd,
   onDragStart,
+  onStatusChange,
   onOpenTask,
   criticalIds,
   onAddTask,
@@ -39,6 +40,7 @@ export default function Board({
             title={col}
             tasks={byColumn[col]}
             onOpenTask={onOpenTask}
+            onStatusChange={onStatusChange}
             criticalIds={criticalIds}
             onAddTask={onAddTask}
             draggingTask={draggingTask}
