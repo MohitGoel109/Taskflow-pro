@@ -42,6 +42,18 @@ const STATUS = Object.freeze({
   DONE: "Done",
 });
 
+const MAX_PROJECT_DAY = 2_147_483_647;
+
+function isValidSchedule(startDate, durationDays) {
+  return (
+    Number.isInteger(startDate) &&
+    startDate >= 0 &&
+    Number.isInteger(durationDays) &&
+    durationDays > 0 &&
+    startDate + durationDays <= MAX_PROJECT_DAY
+  );
+}
+
 class TaskGraph {
   constructor() {
     /** @type {Map<string, {id:string,title:string,status:string,startDate:number,endDate:number,durationDays:number}>} */
@@ -338,4 +350,4 @@ class TaskGraph {
   }
 }
 
-module.exports = { TaskGraph, CycleError, STATUS };
+module.exports = { TaskGraph, CycleError, STATUS, isValidSchedule };

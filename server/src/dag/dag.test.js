@@ -1,4 +1,20 @@
-const { TaskGraph, CycleError, STATUS } = require("./dag");
+const { TaskGraph, CycleError, STATUS, isValidSchedule } = require("./dag");
+
+describe("schedule day validation", () => {
+  test("accepts non-negative integer offsets and positive durations", () => {
+    expect(isValidSchedule(0, 1)).toBe(true);
+    expect(isValidSchedule(10, 5)).toBe(true);
+    expect(isValidSchedule(2_147_483_646, 1)).toBe(true);
+  });
+
+  test("rejects invalid offsets, durations, and end-day overflow", () => {
+    expect(isValidSchedule(-1, 1)).toBe(false);
+    expect(isValidSchedule(0.5, 1)).toBe(false);
+    expect(isValidSchedule(0, 0)).toBe(false);
+    expect(isValidSchedule(0, 1.5)).toBe(false);
+    expect(isValidSchedule(2_147_483_647, 1)).toBe(false);
+  });
+});
 
 function buildLinearChain() {
   // A -> B -> C

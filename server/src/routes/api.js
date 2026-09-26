@@ -2,7 +2,7 @@ const express = require("express");
 const { rateLimit } = require("express-rate-limit");
 const { randomUUID } = require("crypto");
 const { prisma, graph, persistTasks, hydrate } = require("../graphStore");
-const { CycleError } = require("../dag/dag");
+const { CycleError, isValidSchedule } = require("../dag/dag");
 const { suggestDependencies } = require("../ai/suggestDependencies");
 const { SEED_DEFS, SEED_EDGES } = require("../seedData");
 
@@ -51,9 +51,14 @@ router.post("/tasks", async (req, res, next) => {
       return res.status(400).json({ error: "title is required" });
     }
     const id = randomUUID();
-    const start = Number.isFinite(startDate) ? startDate : 0;
-    const duration =
-      Number.isFinite(durationDays) && durationDays > 0 ? durationDays : 1;
+    const start = startDate === undefined ? 0 : startDate;
+    const duration = durationDays === undefined ? 1 : durationDays;
+    if (!isValidSchedule(start, duration)) {
+      return res.status(400).json({
+        error:
+          "startDate must be a non-negative integer and durationDays must be a positive integer within the supported day range.",
+      });
+    }
     const col = column || "Backlog";
 
     await prisma.task.create({
@@ -98,6 +103,19 @@ router.patch("/tasks/:id", async (req, res, next) => {
     }
     const { title, description, column, startDate, durationDays } = req.body;
     const task = graph.getTask(id);
+
+    const nextStart = startDate === undefined ? task.startDate : startDate;
+    const nextDuration =
+      durationDays === undefined ? task.durationDays : durationDays;
+    if (
+      (startDate !== undefined || durationDays !== undefined) &&
+      !isValidSchedule(nextStart, nextDuration)
+    ) {
+      return res.status(400).json({
+        error:
+          "startDate must be a non-negative integer and durationDays must be a positive integer within the supported day range.",
+      });
+    }
 
     if (title !== undefined) task.title = title;
     if (description !== undefined) task.description = description;
