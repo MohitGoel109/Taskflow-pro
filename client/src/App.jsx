@@ -214,6 +214,8 @@ export default function App() {
           criticalPathOn={criticalPathOn}
           onToggleCriticalPath={handleToggleCriticalPath}
           criticalPathLength={criticalPathLength}
+          tasks={tasks}
+          scheduleState={loading ? "loading" : loadError ? "unavailable" : "ready"}
         />
 
         {loading ? (

@@ -143,6 +143,34 @@ h1, h2, h3, h4, .tf-heading {
   color: var(--tf-subtext);
 }
 
+.tf-schedule-health {
+  display: inline-flex;
+  align-items: center;
+  margin-top: 5px;
+  border: 1px solid;
+  border-radius: 9999px;
+  padding: 2px 8px;
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1.4;
+  white-space: nowrap;
+}
+.tf-schedule-health.is-valid {
+  background-color: var(--tf-status-done-bg);
+  color: var(--tf-status-done-text);
+  border-color: var(--tf-status-done-border);
+}
+.tf-schedule-health.is-invalid {
+  background-color: var(--tf-status-blocked-bg);
+  color: var(--tf-status-blocked-text);
+  border-color: var(--tf-status-blocked-border);
+}
+.tf-schedule-health.is-pending {
+  background-color: var(--tf-status-ready-bg);
+  color: var(--tf-status-ready-text);
+  border-color: var(--tf-status-ready-border);
+}
+
 .tf-btn-primary {
   background-color: var(--tf-accent);
   color: var(--tf-accent-text);
