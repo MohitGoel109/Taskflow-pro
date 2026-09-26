@@ -92,7 +92,7 @@ export default function TaskCard({ task, index, onOpen, onStatusChange, isCritic
                     >
                       {stage}
                     </button>
-                    {stageIndex < WORKFLOW.length - 1 && <span className="tf-workflow-arrow" aria-hidden="true">&#8594;</span>}
+                    {stageIndex < WORKFLOW_STAGES.length - 1 && <span className="tf-workflow-arrow" aria-hidden="true">&#8594;</span>}
                   </span>
                 );
               })}
